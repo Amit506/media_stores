@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -35,9 +34,9 @@ class MediaStores {
 
   static Future<Uint8List?> videoBitMap(int id,
       {int width = 640,
-        int height = 480,
-        int from = 0,
-        int quality = 100}) async {
+      int height = 480,
+      int from = 0,
+      int quality = 100}) async {
     final bitmap = await _channel.invokeMethod("getVideoThumbnail",
         {"id": id, "height": height, "width": width, "quality": quality});
     if (bitmap == null) {
@@ -69,6 +68,12 @@ class MediaStores {
     List<ImageInfo> images = map.map((e) => ImageInfo.fromMap(e)).toList();
 
     return images;
+  }
+
+  static Future<String> getPath(String uri) async {
+    final result = await _channel.invokeMethod("getUriPath", {"uri": uri});
+    
+    return result.toString();
   }
 
   static playback() async {

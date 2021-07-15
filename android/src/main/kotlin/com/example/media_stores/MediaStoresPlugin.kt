@@ -1,8 +1,11 @@
 package com.example.media_stores
 
+import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
+import android.database.Cursor
 import android.graphics.Bitmap
+import android.media.ThumbnailUtils
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
@@ -21,6 +24,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.util.concurrent.Executors
 
 
@@ -58,8 +62,8 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
     }
     else if(call.method == "getThumbNail"){
 
-      var mark : Int =0
-      getByteArray(call, result, mark)
+
+      getByteArray(call, result, 0)
     }else if(call.method=="getVideos"){
       sharedVideos = SharedVideos()
       sharedVideos.getVideos(context,result)
@@ -74,13 +78,13 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
     }
     else if(call.method=="getVideoThumbnail"){
 
-      var mark : Int =1
-      getByteArray(call,result,mark)
+
+      getByteArray(call,result,1)
     }
     else if(call.method=="getImagesThumbnail"){
 
-      var mark : Int =2
-      getByteArray(call,result,mark)
+
+      getByteArray(call,result,2)
     }else if(call.method=="getPath") {
       val id: Long? = call.argument<Int>("id")?.toLong()
       val contentUri: Uri = ContentUris.withAppendedId(
@@ -88,9 +92,18 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
               id!!)
       result.success(contentUri.path)
     }else if(call.method =="init"){
-      Log.d("oo","kkkkkkkkkkkkkkkkkkkk");
+
       result.success("oo")
 //      audioBackGroundService.initializeMediaSession();
+    }else if(call.method=="getUriPath"){
+      val uri: String? = call.argument<String>("uri")?.toString()
+
+      val ur : Uri = Uri.parse(uri)
+      val p : String?=getFilePathFromContentUri(ur,context.contentResolver)
+      Log.d("temp",p.toString())
+
+      result.success(p)
+
     }
     else {
       result.notImplemented()
@@ -106,7 +119,7 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
     val executor = Executors.newSingleThreadExecutor()
     executor.execute(Runnable {
 
-      var byteArray: ByteArray? =null;
+      var byteArray: ByteArray? =null
       var handled: Boolean= false
       var exc: Exception? = null
       try {
@@ -138,6 +151,13 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
           byteArray= stream.toByteArray()
           handled =true
         }else{
+//          bmThumbnail = ThumbnailUtils.createVideoThumbnail(filePath, Thumbnails.MICRO_KIND);
+//          imageview_micro.setImageBitmap(bmThumbnail);
+//          val thumbnail: Bitmap = MediaStore.Video.Thumbnails.getThumbnail(context.contentResolver,
+//          ,
+//          MediaStore.Images.Thumbnails.,  // 512 x 384
+//          //MediaStore.Images.Thumbnails.MICRO_KIND, // 96 x 96
+//          null));
           handled =false
         }
       }catch (e:Exception){
@@ -163,6 +183,17 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
       }
       result.success(thumbnail)
     })
+  }
+  private fun getFilePathFromContentUri(contentUri: Uri?,
+                                        contentResolver: ContentResolver): String? {
+    val filePath: String
+    val filePathColumn = arrayOf(MediaStore.MediaColumns.DATA)
+    val cursor: Cursor? = contentResolver.query(contentUri!!, filePathColumn, null, null, null)
+    cursor?.moveToFirst()
+    val columnIndex: Int = cursor!!.getColumnIndex(filePathColumn[0])
+    filePath = cursor.getString(columnIndex)
+    cursor?.close()
+    return filePath
   }
 }
 

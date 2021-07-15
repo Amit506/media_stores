@@ -28,7 +28,9 @@ class Projection {
 
             MediaStore.Audio.Media.WRITER,
             MediaStore.Audio.Media.SIZE,
-            MediaStore.Audio.Media.GENRE
+            MediaStore.Audio.Media.GENRE,
+
+                    MediaStore.Audio.Media.DATA
 
 
             )
@@ -50,7 +52,11 @@ class Projection {
                     MediaStore.Video.Media.AUTHOR,
                     MediaStore.Video.Media.ALBUM_ARTIST,
                     MediaStore.Video.Media.HEIGHT,
-                    MediaStore.Video.Media.IS_DOWNLOAD
+                    MediaStore.Video.Media.IS_DOWNLOAD,
+                    MediaStore.Video.Media.RELATIVE_PATH
+
+
+
             )
 
         }

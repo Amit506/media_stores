@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
 import android.provider.MediaStore
+import android.util.Log
 import io.flutter.plugin.common.MethodChannel
 import java.util.concurrent.TimeUnit
 
@@ -56,6 +57,7 @@ class SharedSongs
                 val columnauthor: Int = cursor.getColumnIndex(Projection.getAudioProjection()[18])
                 val columnwriter: Int = cursor.getColumnIndex(Projection.getAudioProjection()[19])
                 val columnsize: Int = cursor.getColumnIndex(Projection.getAudioProjection()[20])
+//                val x : Int =cursor.getColumnIndex(Projection.getAudioProjection()[21])
                 while (cursor.moveToNext()) {
 
                     val id = cursor.getString(columnId);

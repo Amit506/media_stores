@@ -8,13 +8,17 @@ import android.provider.MediaStore
 import android.util.Log
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.Result
-import java.util.concurrent.TimeUnit
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.HashMap
 
 class SharedVideos(){
 
     class MyAsyncTask internal constructor(context: Context, result: MethodChannel.Result) : AsyncTask<Int, String, MutableList<HashMap<String, Any?>>>() {
         private val context: Context = context
         private lateinit var projection: Projection
+
         private val result: MethodChannel.Result = result
         override fun onPreExecute() {
 
@@ -22,6 +26,10 @@ class SharedVideos(){
 
         override fun doInBackground(vararg params: Int?): MutableList<HashMap<String, Any?>>? {
              projection =Projection()
+        var format:String = "MM-dd-yyyy";
+val formatter: SimpleDateFormat  =  SimpleDateFormat(format, Locale.ENGLISH);
+
+
             val orderBy = MediaStore.Video.VideoColumns.DATE_ADDED + " DESC"
             val arrayList = mutableListOf<HashMap<String, Any?>>()
             context.
@@ -52,12 +60,13 @@ class SharedVideos(){
 
                 while (cursor.moveToNext()) {
 
+
                     val id = cursor.getString(columnId);
                     val displayName = cursor.getString(columnDisplayName)
                     val duration = cursor.getString(columnDuration)
                     val size = cursor.getString(columnSize)
                     val title = cursor.getString(columnTitle)
-                    val dateAdded = cursor.getString(columnDateAdded)
+                    val dateAdded =cursor.getString(columnDateAdded)
                     val volumeName = cursor.getString(columnVolumeName)
                     val resolution = cursor.getString(columnResolution)
                     val orientation = cursor.getString(columnOrientation)
@@ -71,14 +80,16 @@ class SharedVideos(){
                             MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                             id.toLong()
                     )
+                    val sizeInMb : Double = size.toDouble()/(1024*1024)
+                    val dateTime:  String= formatter.format( Date(dateAdded.toLong()));
 
                     val map = hashMapOf<String, Any?>(
                             "id" to id,
                             "displayName" to displayName,
                             "duration" to duration,
-                            "size" to size,
+                            "size" to sizeInMb.toString(),
                             "title" to title,
-                            "dateAdded" to dateAdded,
+                            "dateAdded" to dateTime,
                             "volumeName" to volumeName,
                             "resolution" to resolution,
                             "orientation" to orientation,

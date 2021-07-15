@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'dart:ffi';
+
+import 'dart:typed_data';
 
 class VideoInfo {
   String? id;
@@ -16,6 +19,7 @@ class VideoInfo {
   String? height;
   String? isDownload;
   String? uri;
+  Uint8List? imageBit;
   VideoInfo({
     this.id,
     this.displayName,
@@ -32,6 +36,7 @@ class VideoInfo {
     this.height,
     this.isDownload,
     this.uri,
+    this.imageBit,
   });
 
   VideoInfo copyWith({
@@ -50,6 +55,7 @@ class VideoInfo {
     String? height,
     String? isDownload,
     String? uri,
+    Uint8List? imageBit,
   }) {
     return VideoInfo(
       id: id ?? this.id,
@@ -67,6 +73,7 @@ class VideoInfo {
       height: height ?? this.height,
       isDownload: isDownload ?? this.isDownload,
       uri: uri ?? this.uri,
+      imageBit: imageBit ?? this.imageBit,
     );
   }
 
@@ -87,6 +94,7 @@ class VideoInfo {
       'height': height,
       'isDownload': isDownload,
       'uri': uri,
+      'imageBit': imageBit,
     };
   }
 
@@ -107,6 +115,7 @@ class VideoInfo {
       height: map['height'],
       isDownload: map['isDownload'],
       uri: map['uri'],
+      imageBit: map['imageBit'],
     );
   }
 
@@ -139,6 +148,7 @@ class VideoInfo {
         other.albumArtist == albumArtist &&
         other.height == height &&
         other.isDownload == isDownload &&
+        other.imageBit == imageBit &&
         other.uri == uri;
   }
 
@@ -158,6 +168,7 @@ class VideoInfo {
         albumArtist.hashCode ^
         height.hashCode ^
         isDownload.hashCode ^
+        imageBit.hashCode ^
         uri.hashCode;
   }
 }

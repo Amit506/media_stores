@@ -59,10 +59,13 @@ class _HomePageState extends State<HomePage> {
           width: size.width,
           child: ListView.builder(
             itemCount: songInfo.length,
-            itemBuilder: (_, i) {
+            itemBuilder: (_, ind) {
               return ListTile(
-                subtitle: Text(songInfo[i].size!),
+                subtitle: Text(songInfo[ind].size!),
                 onTap: () async {
+                  final i = await MediaStores.getPath(songInfo[ind].uri!);
+                  print(i);
+
                   // audioPlayer.setUrl(songInfo[i].uri!);
                   // audioPlayer.play();
                   // final c = File.fromUri(Uri.parse(songInfo[i].uri!));
@@ -84,9 +87,9 @@ class _HomePageState extends State<HomePage> {
                       }
                     },
                     future: MediaStores.bitMap(
-                      int.parse(songInfo[i].id!),
+                      int.parse(songInfo[ind].id!),
                     )),
-                title: Text(songInfo[i].title!),
+                title: Text(songInfo[ind].title!),
               );
             },
           ),

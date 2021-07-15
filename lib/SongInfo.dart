@@ -24,33 +24,35 @@ class SongInfo {
   String? writer;
   String? size;
   String? uri;
+  Uint8List? imageBit;
   // Uint8List? bitArray;
 
   SongInfo(
-      this.id,
-      this.albumId,
-      this.artistId,
-      this.artist,
-      this.album,
-      this.isMusic,
-      this.isPodCast,
-      this.isRingtone,
-      this.isAlarm,
-      this.isNotification,
-      this.title,
-      this.displayName,
-      this.composer,
-      this.year,
-      this.track,
-      this.duration,
-      this.bookmark,
-      this.bucketName,
-      this.author,
-      this.writer,
-      this.size,
-      this.uri
-      // this.bitArray
-      );
+    this.id,
+    this.albumId,
+    this.artistId,
+    this.artist,
+    this.album,
+    this.isMusic,
+    this.isPodCast,
+    this.isRingtone,
+    this.isAlarm,
+    this.isNotification,
+    this.title,
+    this.displayName,
+    this.composer,
+    this.year,
+    this.track,
+    this.duration,
+    this.bookmark,
+    this.bucketName,
+    this.author,
+    this.writer,
+    this.size,
+    this.uri,
+    this.imageBit,
+    // this.bitArray
+  );
 
   SongInfo copyWith({
     String? id,
@@ -75,6 +77,7 @@ class SongInfo {
     String? writer,
     String? size,
     String? contentUri,
+    Uint8List? imageBit,
     // Uint8List? bitArray
   }) {
     return SongInfo(
@@ -100,6 +103,7 @@ class SongInfo {
       writer ?? this.writer,
       size ?? this.size,
       contentUri ?? this.uri,
+      imageBit ?? this.imageBit,
       // bitArray ?? this.bitArray
     );
   }
@@ -128,6 +132,7 @@ class SongInfo {
       'writer': writer,
       'size': size,
       'uri': uri,
+      'imageBit': imageBit,
       // 'bitArray': bitArray,
     };
   }
@@ -156,6 +161,7 @@ class SongInfo {
       map['writer'],
       map['size'],
       map['uri'],
+      map['imageBit'],
       // map['bitArray'] != null
       //     ? Uint8List.fromList(List<int>.from(map['bitArray']))
       //     : null,
@@ -198,6 +204,7 @@ class SongInfo {
         other.author == author &&
         other.writer == writer &&
         other.size == size &&
+        other.imageBit == imageBit &&
         other.uri == uri;
     // other.bitArray == bitArray;
   }
@@ -225,6 +232,7 @@ class SongInfo {
         author.hashCode ^
         writer.hashCode ^
         size.hashCode ^
+        imageBit.hashCode ^
         uri.hashCode;
     // bitArray.hashCode;
   }
