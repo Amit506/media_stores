@@ -1,11 +1,14 @@
 package com.example.media_stores
 
+import android.Manifest
+import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
-import android.media.ThumbnailUtils
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
@@ -15,6 +18,7 @@ import android.util.Log
 import android.util.Size
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import com.example.media_store.SharedImages
 import com.example.media_store.SharedSongs
 import com.example.media_store.SharedVideos
@@ -24,16 +28,12 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import java.io.ByteArrayOutputStream
-import java.io.File
 import java.util.concurrent.Executors
 
 
 /** MediaStorePlugin */
 class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
+
   private lateinit var channel : MethodChannel
   private  lateinit var context :Context
   private  lateinit var  sharedSongs: SharedSongs
@@ -94,7 +94,7 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
     }else if(call.method =="init"){
 
       result.success("oo")
-//      audioBackGroundService.initializeMediaSession();
+
     }else if(call.method=="getUriPath"){
       val uri: String? = call.argument<String>("uri")?.toString()
 
@@ -105,7 +105,24 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
       result.success(p)
 
     }
-    else {
+    else if( call.method =="storagePermission") {
+ if(!checkPermissionForReadExternalStorage()){
+   requestPermissionForReadExternalStorage()
+
+
+ }
+   result.success(true)
+
+    }else if(call.method =="getPalette"){
+      val byteArray: ByteArray? = call.argument<ByteArray>("imageByte")
+
+               val paletteHelper = PaletteHelper(context,result)
+               paletteHelper.createPaletteAsync(byteArray!!)
+
+
+
+
+    }else{
       result.notImplemented()
     }
   }
@@ -114,7 +131,8 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
     channel.setMethodCallHandler(null)
   }
 
-  @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
+
   private fun getByteArray(call: MethodCall, result: Result, mark: Int) {
     val executor = Executors.newSingleThreadExecutor()
     executor.execute(Runnable {
@@ -151,17 +169,14 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
           byteArray= stream.toByteArray()
           handled =true
         }else{
-//          bmThumbnail = ThumbnailUtils.createVideoThumbnail(filePath, Thumbnails.MICRO_KIND);
-//          imageview_micro.setImageBitmap(bmThumbnail);
-//          val thumbnail: Bitmap = MediaStore.Video.Thumbnails.getThumbnail(context.contentResolver,
-//          ,
-//          MediaStore.Images.Thumbnails.,  // 512 x 384
-//          //MediaStore.Images.Thumbnails.MICRO_KIND, // 96 x 96
-//          null));
-          handled =false
+          val bitmap = MediaStore.Images.Thumbnails.getThumbnail(
+                  context.contentResolver, id,
+                  MediaStore.Images.Thumbnails.MINI_KIND,
+                  null as BitmapFactory.Options?)
+
         }
       }catch (e:Exception){
-
+handled=false
         exc=e;
       }
       onResult(result, byteArray, handled, exc);
@@ -180,6 +195,7 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
         e.printStackTrace()
         result.error("exception", e.message, null)
         return@Runnable
+
       }
       result.success(thumbnail)
     })
@@ -194,6 +210,24 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
     filePath = cursor.getString(columnIndex)
     cursor?.close()
     return filePath
+  }
+
+  @Throws(java.lang.Exception::class)
+  fun requestPermissionForReadExternalStorage() {
+    try {
+      ActivityCompat.requestPermissions((context as Activity), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+              0x3)
+    } catch (e: java.lang.Exception) {
+      e.printStackTrace()
+      throw e
+    }
+  }
+  private fun checkPermissionForReadExternalStorage(): Boolean {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      val result = context.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+      return result == PackageManager.PERMISSION_GRANTED
+    }
+    return false
   }
 }
 

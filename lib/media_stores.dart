@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
+import 'package:media_stores/Palette.dart';
 import 'package:media_stores/videoInfo.dart';
 
 import 'ImageInfo.dart';
@@ -72,11 +73,15 @@ class MediaStores {
 
   static Future<String> getPath(String uri) async {
     final result = await _channel.invokeMethod("getUriPath", {"uri": uri});
-    
+
     return result.toString();
   }
 
-  static playback() async {
-    await _channel.invokeMethod("init");
+  static Future<Palette> getPalete(Uint8List i) async {
+    final result = await _channel
+        .invokeMethod<Map<dynamic, dynamic>>("getPalette", {"imageByte": i});
+
+    final palette = Palette.fromMap(result!.cast<String, dynamic>());
+    return palette;
   }
 }

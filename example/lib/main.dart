@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: GestureDetector(
         onDoubleTap: () async {
-          await MediaStores.playback();
+          // await MediaStores.playback();
         },
         child: Container(
           height: size.height,
@@ -76,6 +76,7 @@ class _HomePageState extends State<HomePage> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         if (snapshot.data != null) {
+                          MediaStores.getPalete(snapshot.data as Uint8List);
                           return CircleAvatar(
                             child: Image.memory(snapshot.data as Uint8List),
                           );
@@ -104,6 +105,8 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       this.songInfo = songInfo;
     });
+    final v = await MediaStores.getImages();
+    print(v.toString());
     // final g = await MediaStore.getImages();
   }
 }
