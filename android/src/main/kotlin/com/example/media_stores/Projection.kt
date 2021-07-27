@@ -1,8 +1,8 @@
-package com.example.media_store
+package com.example.media_stores
 
 import android.os.Build
 import android.provider.MediaStore
-import androidx.annotation.RequiresApi
+
 
 class Projection {
     companion object {

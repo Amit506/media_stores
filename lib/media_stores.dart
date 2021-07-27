@@ -84,4 +84,13 @@ class MediaStores {
     final palette = Palette.fromMap(result!.cast<String, dynamic>());
     return palette;
   }
+
+  static Future<void> getStoragePermession() async {
+    await _channel.invokeMethod("getStoragePermission");
+  }
+
+  static Future<bool> checkStoragePermession() async {
+    final result = await _channel.invokeMethod("checkStoragePermission");
+    return result as bool;
+  }
 }

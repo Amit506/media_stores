@@ -1,14 +1,13 @@
 package com.example.media_stores
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import androidx.palette.graphics.Palette
 import io.flutter.plugin.common.MethodChannel
 
 class PaletteHelper (context: Context, result: MethodChannel.Result) {
-    private val context: Context = context
+
     private val result: MethodChannel.Result = result
 
     fun createPaletteAsync(byteArray: ByteArray) {

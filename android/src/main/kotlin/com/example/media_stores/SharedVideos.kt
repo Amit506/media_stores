@@ -1,4 +1,4 @@
-package com.example.media_store
+package com.example.media_stores
 
 import android.content.ContentUris
 import android.content.Context
@@ -9,9 +9,9 @@ import android.provider.MediaStore
 import android.util.Log
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.Result
+
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 class SharedVideos(){
 
@@ -25,9 +25,9 @@ class SharedVideos(){
         }
 
         override fun doInBackground(vararg params: Int?): MutableList<HashMap<String, Any?>>? {
-             projection =Projection()
-        var format:String = "MM-dd-yyyy";
-val formatter: SimpleDateFormat  =  SimpleDateFormat(format, Locale.ENGLISH);
+             projection = Projection()
+        var format = "yyyy-MM-dd hh:mm:ss";
+val formatter =  SimpleDateFormat(format, Locale.getDefault());
 
 
             val orderBy = MediaStore.Video.VideoColumns.DATE_ADDED + " DESC"
@@ -84,7 +84,8 @@ val formatter: SimpleDateFormat  =  SimpleDateFormat(format, Locale.ENGLISH);
                                  id.toLong()
                          )
                          val sizeInMb : Double = size.toDouble()/(1024*1024)
-                         val dateTime:  String= formatter.format( Date(dateAdded.toLong()));
+
+                         val dateTime:  String= formatter.format( Date(dateAdded.toLong()*1000));
 
                          val map = hashMapOf<String, Any?>(
                                  "id" to id,
@@ -136,7 +137,7 @@ val formatter: SimpleDateFormat  =  SimpleDateFormat(format, Locale.ENGLISH);
                                  id.toLong()
                          )
                          val sizeInMb : Double = size.toDouble()/(1024*1024)
-                         val dateTime:  String= formatter.format( Date(dateAdded.toLong()));
+                         val dateTime:  String= formatter.format( Date(dateAdded.toLong()))
 
                          val map = hashMapOf<String, Any?>(
                                  "id" to id,

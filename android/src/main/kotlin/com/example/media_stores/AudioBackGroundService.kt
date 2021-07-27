@@ -1,4 +1,4 @@
-package com.example.media_store
+package com.example.media_stores
 //
 //import android.content.Context
 //import android.media.AudioManager

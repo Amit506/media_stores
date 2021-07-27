@@ -19,9 +19,6 @@ import android.util.Size
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import com.example.media_store.SharedImages
-import com.example.media_store.SharedSongs
-import com.example.media_store.SharedVideos
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -39,15 +36,15 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
   private  lateinit var  sharedSongs: SharedSongs
   private  lateinit var  sharedImages: SharedImages
   private lateinit var  sharedVideos: SharedVideos
-//  private  lateinit var audioBackGroundService: AudioBackGroundService
 
-  private val executor = Executors.newCachedThreadPool()
+
+//  private val executor = Executors.newCachedThreadPool()
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
 
     context=flutterPluginBinding.applicationContext
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "media_store")
-//    audioBackGroundService= AudioBackGroundService(context,channel)
+
     channel.setMethodCallHandler(this)
   }
 
@@ -105,7 +102,7 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
       result.success(p)
 
     }
-    else if( call.method =="storagePermission") {
+    else if( call.method =="getStoragePermission") {
  if(!checkPermissionForReadExternalStorage()){
    requestPermissionForReadExternalStorage()
 
@@ -113,7 +110,16 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
  }
    result.success(true)
 
-    }else if(call.method =="getPalette"){
+    }else if(call.method =="checkStoragePermission") {
+      result.success(checkPermissionForReadExternalStorage())
+
+
+
+
+    }
+
+
+    else if(call.method =="getPalette"){
       val byteArray: ByteArray? = call.argument<ByteArray>("imageByte")
 
                val paletteHelper = PaletteHelper(context,result)
@@ -135,52 +141,55 @@ class MediaStoresPlugin: FlutterPlugin, MethodCallHandler {
 
   private fun getByteArray(call: MethodCall, result: Result, mark: Int) {
     val executor = Executors.newSingleThreadExecutor()
-    executor.execute(Runnable {
+    executor.execute {
 
-      var byteArray: ByteArray? =null
-      var handled: Boolean= false
+      var byteArray: ByteArray? = null
+      var handled = false
       var exc: Exception? = null
       try {
 
-        var contentUri : Uri?
+        val contentUri: Uri?
         val id: Long? = call.argument<Int>("id")?.toLong()
         val width: Int? = call.argument<Int>("width")?.toInt()
         val height: Int? = call.argument<Int>("height")?.toInt()
         val quality: Int? = call.argument<Int>("quality")?.toInt()
-        if(mark==0){
-          contentUri  = ContentUris.withAppendedId(
+        if (mark == 0) {
+          contentUri = ContentUris.withAppendedId(
                   MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                   id!!)
-        }else if(mark==1){
+        } else if (mark == 1) {
           contentUri = ContentUris.withAppendedId(
                   MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                   id!!)
-        }else{
+        } else {
           contentUri = ContentUris.withAppendedId(
                   MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                   id!!)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          val bitmap=   context.contentResolver.loadThumbnail(
+          val bitmap = context.contentResolver.loadThumbnail(
                   contentUri, Size(width ?: 640, height ?: 480), null)
           val stream = ByteArrayOutputStream()
           bitmap.compress(Bitmap.CompressFormat.PNG, quality!!, stream)
-          byteArray= stream.toByteArray()
-          handled =true
-        }else{
+          byteArray = stream.toByteArray()
+          handled = true
+        } else {
           val bitmap = MediaStore.Images.Thumbnails.getThumbnail(
                   context.contentResolver, id,
                   MediaStore.Images.Thumbnails.MINI_KIND,
                   null as BitmapFactory.Options?)
+          val stream = ByteArrayOutputStream()
+          bitmap.compress(Bitmap.CompressFormat.PNG, quality!!, stream)
+          byteArray = stream.toByteArray()
 
         }
-      }catch (e:Exception){
-handled=false
-        exc=e;
+      } catch (e: Exception) {
+        handled = false
+        exc = e;
       }
       onResult(result, byteArray, handled, exc);
-    })
+    }
   }
   private fun runOnUiThread(runnable: Runnable) {
     Handler(Looper.getMainLooper()).post(runnable)

@@ -1,13 +1,16 @@
-package com.example.media_store
+package com.example.media_stores
 import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
+import com.example.media_stores.Projection
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.Result
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.HashMap
 
 
 class SharedImages (){
@@ -21,10 +24,12 @@ class SharedImages (){
         }
 
         override fun doInBackground(vararg params: Int?): MutableList<HashMap<String, Any?>> {
-                    projection =Projection()
+                    projection = Projection()
         val orderBy = MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"
 
         val arrayList = mutableListOf<HashMap<String, Any?>>()
+            var format = "yyyy-MM-dd hh:mm:ss";
+            val formatter =  SimpleDateFormat(format, Locale.getDefault());
         context.contentResolver.query(
 
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -74,13 +79,14 @@ class SharedImages (){
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                             id.toLong()
                     )
+                    val dateTime:  String= formatter.format( Date(dateAdded.toLong()*1000));
                     val map = hashMapOf<String, Any?>(
                             "id" to id,
                             "displayName" to displayName,
                             "duration" to duration,
                             "size" to size,
                             "title" to title,
-                            "dateAdded" to dateAdded,
+                            "dateAdded" to dateTime,
                             "volumeName" to volumeName,
                             "resolution" to resolution,
                             "orientation" to orientation,
@@ -124,13 +130,14 @@ class SharedImages (){
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                             id.toLong()
                     )
+                    val dateTime:  String= formatter.format( Date(dateAdded.toLong()*1000));
                     val map = hashMapOf<String, Any?>(
                             "id" to id,
                             "displayName" to displayName,
 
                             "size" to size,
                             "title" to title,
-                            "dateAdded" to dateAdded,
+                            "dateAdded" to dateTime,
 
                             "height" to height,
 
